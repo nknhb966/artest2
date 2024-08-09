@@ -16,9 +16,18 @@
         bottom: 0;
         z-index: 10001;
       }
-      .box {
+      .box0 {
         flex: 1;
         background-color: rgba(255, 255, 255, 0.5);
+        padding: 10px;
+        margin: 0.5px;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+      }
+      .box1 {
+        flex: 1;
+        background-color: rgba(255, 255, 255, 0.8);
         padding: 10px;
         margin: 0.5px;
         cursor: pointer;
@@ -30,8 +39,8 @@
  
   <body>
     <div class="container-box">
-    <div class="box" id="SwitchUrl">Kids切替</div>
-    <div class="box" id="Showing">全部表示</div>
+    <div class="box1" id="SwitchUrl">Kids切替</div>
+    <div class="box0" id="Showing">全部表示</div>
   </div>
     <script>
       const sizeMultiplier = 15; // VRとARで異なる
@@ -222,11 +231,7 @@
       let isUsingBaseUrl0 = true;
       const baseUrl0 = "https://nknhb966.github.io/artest2/kokufuhakkutsu2/";
       const baseUrl1 = "https://nknhb966.github.io/artest2/kokufuhakkutsu2forkids/";
-
       let baseUrl = baseUrl1;
-
-      const imageUrl0 = `${baseUrl}30000_kokufuhakkutsu2.png`;
-      const imageUrl1 = `${baseUrl}30001_kokufuhakkutsu2.png`;
 
       function Spawn1(){spawnBoxImage(1, { x: 0, y: 1.2, z: -1. }, { x: 1.5, y: 1.5, z: 0 }, 0, baseUrl + "30100_kokufuhakkutsu2.png");}
       function Spawn2(){spawnModelImage(2, { x: 1.8, y: 1.2, z: -3.25 }, { x: 1.5, y: 1.5, z: 0 }, 0, baseUrl + "30200_kokufuhakkutsu2.png", { x: 1, y: 1, z: 1 });}
@@ -358,6 +363,8 @@
 
         <!-- VRのみ設定（上部概要） -->
         <script>
+        const imageUrl0 = `${baseUrl}30000_kokufuhakkutsu2.png`;
+        const imageUrl1 = `${baseUrl}30001_kokufuhakkutsu2.png`;
         document.addEventListener('DOMContentLoaded', () => {
           document.querySelector('#image1').setAttribute('src', imageUrl0);
           document.querySelector('#image2').setAttribute('src', imageUrl0);
@@ -456,15 +463,22 @@
 
       document.getElementById("SwitchUrl").addEventListener("click", function() {
         if (isUsingBaseUrl0) {
-          console.log("Using URL:", baseUrl0);
           baseUrl = baseUrl0;
-          document.getElementById("SwitchUrl").style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-        } else {
-          console.log("Using URL:", baseUrl1);
-          baseUrl = baseUrl1;
           document.getElementById("SwitchUrl").style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        } else {
+          baseUrl = baseUrl1;
+          document.getElementById("SwitchUrl").style.backgroundColor = "rgba(255, 255, 255, 0.8)";
         }
+        const imageUrl0 = `${baseUrl}30000_kokufuhakkutsu2.png`;
+        const imageUrl1 = `${baseUrl}30001_kokufuhakkutsu2.png`;
+        document.querySelector('#image1').setAttribute('src', imageUrl0);
+        document.querySelector('#image2').setAttribute('src', imageUrl0);
+        document.querySelector('#image3').setAttribute('src', imageUrl1);
+        document.querySelector('#image4').setAttribute('src', imageUrl1);
         isUsingBaseUrl0 = !isUsingBaseUrl0;
+        hideAll();
+        document.getElementById("Showing").style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        isAllVisible = false;
       });
 
       const ctlR = document.getElementById("ctlR");
@@ -555,14 +569,20 @@
       function toggleLocations() {
         const panel1 = document.querySelector('#panel1');
         const panel2 = document.querySelector('#panel2');
+        const panel3 = document.querySelector('#panel3');
+        const panel4 = document.querySelector('#panel4');
         if (isLocationSwitch) {
           moveLocation(destination2);
           if (panel1) panel1.setAttribute('visible', 'true');
           if (panel2) panel2.setAttribute('visible', 'true');
+          if (panel3) panel3.setAttribute('visible', 'true');
+          if (panel4) panel4.setAttribute('visible', 'true');
         } else {
           moveLocation(destination1);
           if (panel1) panel1.setAttribute('visible', 'false');
           if (panel2) panel2.setAttribute('visible', 'false');
+          if (panel3) panel3.setAttribute('visible', 'false');
+          if (panel4) panel4.setAttribute('visible', 'false');
         }
         isLocationSwitch = !isLocationSwitch;
       }
