@@ -1,51 +1,74 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title></title>
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>3D Models with Text</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  </head>
-  <body style="margin: 0; background-color: #333;">
-    <a-scene>
-      <!-- カメラ -->
-      <a-entity camera look-controls></a-entity>
+<!-- <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script> -->
+<body style="margin:0; background-color: #333;">
+<div id="container"></div>
 
-      <!-- 照明 -->
-      <a-light type="ambient" color="#888"></a-light>
-      <a-light type="directional" position="-1 2 1"></a-light>
+<style>
+body {
+  font-family: sans-serif;
+}
+a {
+  color: black !important;
+}
+</style>
 
-      <!-- モデルとテキスト -->
-      <a-entity position="0 1.6 -1">
-        <a-gltf-model src="./kokufuhakkutsu2/text01.glb" position="0.2 0 -0.5"></a-gltf-model>
-        <a-entity text="value: ワッフル; align: center; color: white;" 
-                  position="0.2 0.2 -0.5" 
-                  scale="0.3 0.3 0.3" 
-                  look-at="#camera"></a-entity>
-      </a-entity>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://code4fukui.github.io/three.js/build/three.module.js",
+    "three/addons/": "https://code4fukui.github.io/three.js/examples/jsm/"
+  }
+}
+</script>
 
-      <a-entity position="0 1.6 -1">
-        <a-gltf-model src="./kokufuhakkutsu2/text02.glb" position="-0.2 0 -0.5"></a-gltf-model>
-        <a-entity text="value: ホットサンド; align: center; color: white;" 
-                  position="-0.2 0.2 -0.5" 
-                  scale="0.3 0.3 0.3" 
-                  look-at="#camera"></a-entity>
-      </a-entity>
-    </a-scene>
+<script type="module">
+import * as THREE from "three";
+import { initXR, waitLoadGLTF, createModelText, isVisionPro } from "./threeutil.js";
 
-    <script>
-      // カメラの方向を向くカスタムコンポーネント
-      AFRAME.registerComponent('look-at', {
-        schema: { type: 'selector' },
-        init: function () {
-          this.targetEl = this.data;
-        },
-        tick: function () {
-          if (this.targetEl) {
-            this.el.object3D.lookAt(this.targetEl.object3D.position);
-          }
-        }
-      });
-    </script>
-  </body>
+const { renderer, scene, camera } = initXR();
+
+const offy = isVisionPro() ? .6 : 0;
+
+const txts = [];
+
+{
+  const path = "./kokufuhakkutsu2/model02_small.glb";
+  const model = await waitLoadGLTF(path);
+  model.position.z = -.5;
+  model.position.x = .2;
+  model.position.y = offy - 0.2;
+  scene.add(model);
+
+  const txt = createModelText("ワッフル", .3);
+  txt.position.x = model.position.x;
+  txt.position.z = model.position.z;
+  txt.position.y = model.position.y + .2;
+  scene.add(txt);
+  txts.push(txt);
+}
+{
+  const path = "./kokufuhakkutsu2/model03_small.glb";
+  const model = await waitLoadGLTF(path);
+  model.position.z = -.5;
+  model.position.x = -.2;
+  model.position.y = offy - 0.2;
+  scene.add(model);
+
+  const txt = createModelText("ホットサンド", .3);
+  txt.position.x = model.position.x;
+  txt.position.z = model.position.z;
+  txt.position.y = model.position.y + .2;
+  scene.add(txt);
+  txts.push(txt);
+}
+
+renderer.setAnimationLoop(() => {
+  renderer.render(scene, camera);
+  txts.forEach(i => i.lookAt(camera.position));
+});
+
+</script>
+</body>
 </html>
