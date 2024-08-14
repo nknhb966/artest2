@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>越前国府発掘プロジェクト2VR_Test</title>
+    <title>2越前国府発掘プロジェクト2VR_Test</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- VRとARでバージョン異なる -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.5.0/dist/aframe-cursor-teleport-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script> <!-- VRとARで異なる -->
@@ -74,5 +74,7 @@ renderer.setAnimationLoop(() => {
 });
 
 </script>
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" renderer="colorManagement: true;" id="scene">
+    </a-scene>
 </body>
 </html>
