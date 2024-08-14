@@ -3,22 +3,20 @@
   <head>
     <meta charset="UTF-8">
     <title>越前国府発掘プロジェクト2VR_Test</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- VRとARでバージョン異なる -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.5.0/dist/aframe-cursor-teleport-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script> <!-- VRとARで異なる -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script>
   </head>
   <body>
-
-
     <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" renderer="colorManagement: true;" id="scene">
-
       <a-assets>
         <a-asset-item id="kokufu" src="https://nknhb966.github.io/artest2/kokufuhakkutsu2/00101_kokufuhakkutsu_cut_small.glb"></a-asset-item>
       </a-assets>
+
       <!-- <a-entity gltf-model="#kokufu" scale="1 1 1" position="0 -0.5 0" rotation="0 0 0" class="model" collidable></a-entity> -->
 
       <!-- 常にカメラに正面を向くテキスト -->
-      <a-entity id="text" text="value: text; color: red; width: 6;" position="0 2 -2"></a-entity>
+      <a-entity id="text" text="value: aaa; color: red; width: 5; align: center" position="0 2 -3"></a-entity>
 
       <a-camera id="camera"></a-camera>
     </a-scene>
