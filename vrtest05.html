@@ -66,6 +66,66 @@
 
 
     <script>
+      const cameraRig = document.getElementById('cameraRig');
+      const modelsToSpawn1 = [1, 2, 3, 4, 6, 7, 8, 9, 11, 12];
+      const modelsToSpawn2 = [5, 10];
+
+      // VRとARで異なる
+      function moveLocation(destination) {
+        const cursorTeleport = cameraRig.components['cursor-teleport'];
+        cursorTeleport.teleportTo(destination.object3D.position, destination.object3D.quaternion); 
+        var head = document.getElementById('head');
+        if (head) {
+          restartRotation = Object.assign({}, head.getAttribute('rotation'));
+          restartRotation.y -= destination.object3D.rotation.y * 180 / Math.PI;
+        }
+      }
+
+      function showAll() {
+        modelsToSpawn1.forEach(index => {
+          if (!modelAdded[index] || !imageAdded[index]) {
+            window[`Spawn${index}`]();
+            if (!imageAdded[index]) {
+              window[`Spawn${index}`]();
+            }
+          }
+        });
+        modelsToSpawn2.forEach(index => {
+          if (!imageAdded[index]) {
+            window[`Spawn${index}`]();
+          }
+        });
+      }
+
+      function hideAll() {
+        modelsToSpawn1.forEach(index => {
+          if (modelAdded[index] && !imageAdded[index]) {
+            window[`Spawn${index}`]();
+            window[`Spawn${index}`]();
+          } else if (imageAdded[index]) {
+            window[`Spawn${index}`]();
+          }
+        });
+        modelsToSpawn2.forEach(index => {
+          if (imageAdded[index]) {
+            window[`Spawn${index}`]();
+          }
+        });
+      }
+
+      // 以下、VRとARで異なる
+      let isAllVisible = false;
+      let isLocationSwitch = false;
+      let gripButtonPressedR = false;
+      let aButtonPressedR = false;
+      let bButtonPressedR = false;
+      let gripButtonPressedL = false;
+      let xButtonPressedL = false;
+      let yButtonPressedL = false;
+      var initialPosition = {x: 0, y: 0, z: -7.3};
+      var currentRotation = {x: 0, y: 0, z: 0};
+      var restartRotation = {x: 0, y: 0, z: 0};
+      var deltaRotation = {x: 0, y: 0, z: 0};
 
       const ctlR = document.getElementById("ctlR");
       const ctlL = document.getElementById("ctlL");
@@ -143,8 +203,35 @@
         yButtonPressedL = false;
       });
       
-
-
+      function toggleVisibility() {
+        if (isAllVisible) {
+          hideAll();
+        } else {
+          showAll();
+        }
+        isAllVisible = !isAllVisible;
+      }
+      
+      function toggleLocations() {
+        const panel1 = document.querySelector('#panel1');
+        const panel2 = document.querySelector('#panel2');
+        const panel3 = document.querySelector('#panel3');
+        const panel4 = document.querySelector('#panel4');
+        if (isLocationSwitch) {
+          moveLocation(destination2);
+          if (panel1) panel1.setAttribute('visible', 'true');
+          if (panel2) panel2.setAttribute('visible', 'true');
+          if (panel3) panel3.setAttribute('visible', 'true');
+          if (panel4) panel4.setAttribute('visible', 'true');
+        } else {
+          moveLocation(destination1);
+          if (panel1) panel1.setAttribute('visible', 'false');
+          if (panel2) panel2.setAttribute('visible', 'false');
+          if (panel3) panel3.setAttribute('visible', 'false');
+          if (panel4) panel4.setAttribute('visible', 'false');
+        }
+        isLocationSwitch = !isLocationSwitch;
+      }
     </script>
 
 
