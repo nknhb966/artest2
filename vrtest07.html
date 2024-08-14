@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>2越前国府発掘プロジェクト2VR_Test</title>
+    <title>越前国府発掘プロジェクト2VR_Test</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.5.0/dist/aframe-cursor-teleport-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script>
@@ -46,7 +46,7 @@
     <script>
       AFRAME.registerComponent('billboard', {
         tick: function () {
-          const cameraEl = document.querySelector('#head'); // カメラの位置を参照
+          const cameraEl = document.querySelector('#head');
           const textEl = this.el;
           // テキストがカメラの方向を向くように
           textEl.object3D.lookAt(cameraEl.object3D.position);
@@ -55,6 +55,11 @@
 
       // Billboard コンポーネントをテキストに追加
       document.querySelector('#text').setAttribute('billboard', '');
+
+      // テレポート完了後にテキストの向きを再調整するためのリスナー
+      document.querySelector('#cameraRig').addEventListener('teleport-complete', function () {
+        document.querySelector('#text').emit('tick');
+      });
     </script>
   </body>
 </html>
