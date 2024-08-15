@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Frame Teleport Example</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- VRとARでバージョン異なる -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script> <!-- VRとARで異なる -->
+  </head>
+  <body>
+    <a-scene>
+      <!-- カメラリグエンティティ -->
+      <a-entity 
+        id="cameraRig"
+        character-controller 
+        position="0 0 0" 
+        cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
+        
+        <!-- カメラとカーソル -->
+        <a-entity id="head" position="0 1.52 0" camera look-controls>
+          <a-cursor></a-cursor>
+        </a-entity>
+      </a-entity>
+
+      <!-- 地面 -->
+      <a-plane class="collision" position="0 0 -5" rotation="-90 0 0" width="10" height="10" color="black"></a-plane>
+  
+      <!-- 無視されるエンティティ -->
+      <a-sphere class="clickable" position="2 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+    </a-scene>
+
+    <script>
+      AFRAME.registerComponent('character-controller', {
+        events: {
+          'navigation-end': function () {
+            console.log("moved");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
