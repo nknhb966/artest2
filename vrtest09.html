@@ -288,7 +288,7 @@
 
       <!-- player -->
       <a-entity id="cameraRig" position="0 0 0" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
-        <a-entity id="head" position="0 1.52 0" camera wasd-controls look-controls="reverseMouseDrag: true"></a-entity> <!-- VRとARで異なる -->
+        <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity> <!-- VRとARで異なる -->
         <a-entity
           id="ctlL"
           laser-controls="hand: left"
@@ -331,18 +331,18 @@
         <a-entity gltf-model="#kokufu" scale="1 1 1" position="0.75 -0.5 4.5" rotation="0 0 0" class="model" collidable></a-entity>
         <a-entity gltf-model="#kokufu2" scale="1 1 1" position="0 -0.5 -4.5" rotation="0 90 0" class="model" collidable></a-entity>
 
-        <a-entity gltf-model="#text-asset1" scale="0.15 0.15 0.15" position="2.9 0.8 -4.5" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset2" scale="0.15 0.15 0.15" position="2.65 0.8 -2.25.8" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset3" scale="0.15 0.15 0.15" position="2.65 0.8 -4.2" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset4" scale="0.15 0.15 0.15" position="4.9 0.8 -1.5" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset5" scale="0.15 0.15 0.15" position="-5.9 0.8 -5.7" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset6" scale="0.15 0.15 0.15" position="-6.2 0.8 -5.55" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#text-asset7" scale="0.15 0.15 0.15" position="2.4 0.8 3" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#text-asset8" scale="0.15 0.15 0.15" position="2.3 0.8 4.8" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#text-asset9" scale="0.15 0.15 0.15" position="4.3 0.8 5.2" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#text-asset10" scale="0.15 0.15 0.15" position="-0.3 0.8 2.5" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#text-asset11" scale="0.15 0.15 0.15" position="6.6 0.8 4.8" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#text-asset12" scale="0.15 0.15 0.15" position="-6.75 0.8 5.7" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#text-asset1" scale="0.15 0.15 0.15" position="2.9 0.8 -4.5" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset2" scale="0.15 0.15 0.15" position="2.65 0.8 -2.25.8" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset3" scale="0.15 0.15 0.15" position="2.65 0.8 -4.2" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset4" scale="0.15 0.15 0.15" position="4.9 0.8 -1.5" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset5" scale="0.15 0.15 0.15" position="-5.9 0.8 -5.7" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset6" scale="0.15 0.15 0.15" position="-6.2 0.8 -5.55" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset7" scale="0.15 0.15 0.15" position="2.4 0.8 3" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset8" scale="0.15 0.15 0.15" position="2.3 0.8 4.8" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset9" scale="0.15 0.15 0.15" position="4.3 0.8 5.2" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset10" scale="0.15 0.15 0.15" position="-0.3 0.8 2.5" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset11" scale="0.15 0.15 0.15" position="6.6 0.8 4.8" rotation="0 0 0" billboard></a-entity>
+        <a-entity gltf-model="#text-asset12" scale="0.15 0.15 0.15" position="-6.75 0.8 5.7" rotation="0 0 0" billboard></a-entity>
 
         <script>
           for (let i = 1; i <= numberOfModels; i++) {
@@ -351,9 +351,9 @@
         </script>
 
         <a-entity id="box1" geometry="primitive: box" material="color: white; opacity: 0.8" position="2.4 0 0.1" scale="1.5 1.5 0" animation="property: position; to: 2 0 -5.7; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false"></a-entity>
-        <a-entity id="boxtext1" gltf-model="#text-asset1" position="2.4 0.9 0.1" scale="0.15 0.15 0.15" animation="property: position; to: 2 0.9 -5.7; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false"></a-entity>
+        <a-entity id="boxtext1" gltf-model="#text-asset1" position="2.4 0.9 0.1" scale="0.15 0.15 0.15" animation="property: position; to: 2 0.9 -5.7; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false" billboard></a-entity>
         <a-entity id="box7" geometry="primitive: box" material="color: white; opacity: 0.8" position="2.4 0 6.1" scale="1.5 1.5 0" animation="property: position; to: 2 0 0.3; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false"></a-entity>
-        <a-entity id="boxtext7" gltf-model="#text-asset7" position="2.4 0.9 6.1" rotation="0 180 0" scale="0.15 0.15 0.15" animation="property: position; to: 2 0.9 0.3; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false"></a-entity>
+        <a-entity id="boxtext7" gltf-model="#text-asset7" position="2.4 0.9 6.1" rotation="0 180 0" scale="0.15 0.15 0.15" animation="property: position; to: 2 0.9 0.3; dur: 5000; easing: linear; dir: alternate; loop: true" visible="false" billboard></a-entity>
 
         <!-- VRとARで異なる rotationはy軸方向の回転のみ可="0 # 0"-->
         <a-entity id="destination1" position="0 10 0" rotation="0 0 0"></a-entity> 
@@ -361,9 +361,6 @@
 
         <!-- VRのみ設定（テレポート系） -->
         <a-entity class="collision" position="0 0 0" rotation="-90 0 0" geometry="primitive: plane; width: 18; height: 14" material="color: aqua; opacity: 0."></a-entity>
-
-        <!-- 常にカメラに正面を向くテキスト -->
-        <a-entity id="text" text="value: 越前国府text; color: red; width: 6; align: center" position="0 1.52 -0.5"></a-entity>
 
         <!-- VRのみ設定（上部概要） -->
         <script>
@@ -600,64 +597,6 @@
     </script>
 
     <script>
-// // AFRAME.registerComponent('custom-blink-handler', {
-// AFRAME.registerComponent('character-controller', {
-//   // init: function () {
-//         events: {
-//           'navigation-end': function () {
-//             console.log("moved");
-//             const cameraEl = document.querySelector('#head'); // カメラの位置を参照
-//             console.log(cameraEl);
-//             // textEl.object3D.lookAt(cameraEl.object3D.position);
-
-//     // const cameraRig = document.getElementById('cameraRig');
-//     const head = document.querySelector('#cameraRig');
-//     console.log(head);
-
-//     // 'teleport'イベントをリスンする
-//     // cameraRig.addEventListener('teleport', function (event) {
-//       const destination = cameraEl.object3D; // hitPointが移動先の3D空間内の位置を示す
-
-//       console.log('position:', destination);
-
-//       // `cursor-teleport`を使って移動
-//       // const cursorTeleport = cameraRig.components['cursor-teleport'];
-//       // cursorTeleport.teleportTo(destination.position, destination.quaternion); 
-
-//       if (head) {
-//         // ヘッドポジションと回転を記録
-//         const restartPosition = Object.assign({}, cameraEl.getAttribute('position'));
-//         const restartRotation = Object.assign({}, cameraEl.getAttribute('rotation'));
-
-//         // 目的地に基づいて位置と回転を調整
-//         // restartPosition.x -= destination.position.x;
-//         // restartPosition.x -= destination.position.x;
-//         // restartPosition.y -= destination.position.y;
-//         // restartPosition.z -= destination.position.z;
-//         restartPosition.x -= destination.position.x;
-//         restartPosition.y -= destination.position.y;
-//         restartPosition.z -= destination.position.z;
-
-//         restartRotation.y -= destination.rotation.y * 180 / Math.PI;
-
-//         // 必要ならば、ここでさらにカスタム処理を追加可能
-//         console.log('New position:', restartPosition);
-//         console.log('New rotation:', restartRotation);
-//       }
-//     // });
-//   }
-// }
-// });
-
-
-      // AFRAME.registerComponent('character-controller', {
-      //   events: {
-      //     'navigation-end': function () {
-      //       console.log("moved");
-      //     }
-      //   }
-      // });
-
       var velocity = {x: 0, y: 0, z: 0};
       var acceleration = 0.02;
       var deceleration = 0.008;
@@ -774,19 +713,17 @@
           updateModelMovement();
         }
       });
-    </script>
 
-    <script>
+      // 
       AFRAME.registerComponent('billboard', {
         tick: function () {
-          const cameraEl = document.querySelector('#cameraRig'); // カメラの位置を参照
+          const cameraEl = document.querySelector('#cameraRig');
           const textEl = this.el;
-          textEl.object3D.lookAt(cameraEl.object3D.position);
+          const cameraPosition = cameraEl.object3D.position.clone();
+          cameraPosition.y += 1.52;
+          textEl.object3D.lookAt(cameraPosition);
         }
       });
-
-      document.querySelector('#text').setAttribute('billboard', '');
     </script>
-
   </body>
 </html>
