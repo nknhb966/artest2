@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>越前国府発掘プロジェクト2VR_Test</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- VRとARでバージョン異なる -->
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.5.0/dist/aframe-cursor-teleport-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script> <!-- VRとARで異なる -->
     <style>
       .container-box {
@@ -286,7 +286,7 @@
       </a-assets>
 
       <!-- player -->
-      <a-entity id="cameraRig" position="0 0 0" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
+      <a-entity id="cameraRig" position="0 0 0" character-controller cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera wasd-controls look-controls="reverseMouseDrag: true"></a-entity> <!-- VRとARで異なる -->
         <a-entity
           id="ctlL"
@@ -722,6 +722,54 @@
       });
 
       document.querySelector('#text').setAttribute('billboard', '');
+
+      AFRAME.registerComponent('character-controller', {
+        events: {
+          'navigation-end': function () {
+            console.log("moved");
+            console.log(event.detail.intersection);
+    this.el.addEventListener('click', function (event) {
+      const intersection = event.detail.intersection; // クリックした場所の情報を取得
+      if (intersection) {
+        moveLocation(intersection);
+      }
+    });
+          }
+        }
+      });
+
+// AFRAME.registerComponent('custom-blink-handler', {
+//   init: function () {
+//     const cameraRig = document.getElementById('cameraRig');
+//     const head = document.getElementById('head');
+    
+//     // 'teleport'イベントをリスンする
+//     cameraRig.addEventListener('teleport', function (event) {
+//       const destination = event.detail.hitPoint; // hitPointが移動先の3D空間内の位置を示す
+
+//       // `cursor-teleport`を使って移動
+//       const cursorTeleport = cameraRig.components['cursor-teleport'];
+//       cursorTeleport.teleportTo(destination.position, destination.quaternion); 
+
+//       if (head) {
+//         // ヘッドポジションと回転を記録
+//         const restartPosition = Object.assign({}, head.getAttribute('position'));
+//         const restartRotation = Object.assign({}, head.getAttribute('rotation'));
+
+//         // 目的地に基づいて位置と回転を調整
+//         restartPosition.x -= destination.position.x;
+//         restartPosition.y -= destination.position.y;
+//         restartPosition.z -= destination.position.z;
+
+//         restartRotation.y -= destination.rotation.y * 180 / Math.PI;
+
+//         // 必要ならば、ここでさらにカスタム処理を追加可能
+//         console.log('New position:', restartPosition);
+//         console.log('New rotation:', restartRotation);
+//       }
+//     });
+//   }
+// });
     </script>
 
   </body>
