@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>越前国府発掘プロジェクト2VR_Test</title>
+    <title>2越前国府発掘プロジェクト2VR_Test</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- VRとARでバージョン異なる -->
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script> <!-- VRとARで異なる -->
@@ -292,17 +292,13 @@
         <a-entity
           id="ctlL"
           laser-controls="hand: left"
-           blink-controls></a-entity>
-<!--         <a-entity
-          id="ctlL"
-          laser-controls="hand: left"
           raycaster="objects: .clickable"
           line="color: red; opacity: 0.75"
           blink-controls="
             collisionEntities: .collision;
             cameraRig: #cameraRig;
             teleportOrigin: #head;
-            curveShootingSpeed: 6"></a-entity> -->
+            curveShootingSpeed: 6"></a-entity>
         <a-entity
           id="ctlR"
           laser-controls="hand: right"
@@ -718,88 +714,18 @@
         }
       });
 
-      // 
-      // AFRAME.registerComponent('billboard', {
-      //   tick: function () {
-      //     // 右手モード
-      //     // const headEl = document.querySelector('#head');
-      //     // const textEl = this.el;
-      //     // textEl.object3D.lookAt(headEl.object3D.position);
-
-      //     // 左手モード
-      //     // const cameraEl = document.querySelector('#cameraRig');
-      //     // const textEl = this.el;
-      //     // const cameraPosition = cameraEl.object3D.position.clone();
-      //     // cameraPosition.y += 1.52;
-      //     // textEl.object3D.lookAt(cameraPosition);
-
-
-      //   }
-      // });
-
-
-AFRAME.registerComponent('billboard', {
-  tick: function () {
-    const headEl = document.querySelector('#head');
-    const cameraRigEl = document.querySelector('#cameraRig');
-    const textEl = this.el;
-
-    // Get the position of the head and camera rig
-    const headPosition = headEl.object3D.position;
-    const cameraRigPosition = cameraRigEl.object3D.position;
-
-    // Calculate the final position by combining the head and camera rig positions
-    const targetPosition = new THREE.Vector3().addVectors(headPosition, cameraRigPosition);
-
-    // Make the text element look at the combined target position
-    textEl.object3D.lookAt(targetPosition);
-  }
-});
-
-      // AFRAME.registerComponent('character-controller', {
-      //   events: {
-      //     'navigation-end': function () {
-      //       console.log("moved");
-      //     // const cameraEl = document.querySelector('#cameraRig');
-      //     // const textEl = this.el;
-      //     // console.log(textEl);
-      //     // const cameraPosition = cameraEl.object3D.position.clone();
-      //     // cameraPosition.y += 0;
-      //     // console.log(cameraPosition);
-      //     // textEl.object3D.lookAt(cameraPosition);
-
-      // // const targetObject = this.el.sceneEl.querySelector('#targetObject');
-      // // console.log(targetObject);
-      // // if (targetObject) {
-      // //   // targetObject.setAttribute('billboard', '');
-      // //     const cameraEl = document.querySelector('#cameraRig');
-      // //     // const cameraPosition = cameraEl.object3D.position.clone();
-      // //     // cameraPosition.y += 0;
-      // //     // console.log(cameraPosition);
-      // //     targetObject.object3D.lookAt(cameraEl.object3D.position);
-      // // }
-
-      // // 'targetObject' はオブジェクトのID
-      // const targetObject = this.el.sceneEl.querySelector('#targetObject');
-      // const camera = document.querySelector('#cameraRig');
-
-      // console.log(targetObject);
-      // console.log(camera);
-
-      // if (targetObject && camera) {
-      //   const cameraPosition = camera.object3D.position;
-      //   const objectPosition = targetObject.object3D.position;
-
-      //   console.log(cameraPosition);
-
-      //   // オブジェクトをカメラの方向に向ける
-      //   targetObject.object3D.lookAt(cameraPosition);
-      //   console.log("ccc");
-      // }
-
-      //     }
-      //   }
-      // });
+      // 視界に対して常に正面を向かせる
+      AFRAME.registerComponent('billboard', {
+        tick: function () {
+          const headEl = document.querySelector('#head');
+          const cameraRigEl = document.querySelector('#cameraRig');
+          const textEl = this.el;
+          const headPosition = headEl.object3D.position;
+          const cameraRigPosition = cameraRigEl.object3D.position;
+          const targetPosition = new THREE.Vector3().addVectors(headPosition, cameraRigPosition);
+          textEl.object3D.lookAt(targetPosition);
+        }
+      });
     </script>
   </body>
 </html>
