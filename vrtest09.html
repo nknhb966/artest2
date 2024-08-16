@@ -288,7 +288,7 @@
 
       <!-- player -->
       <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
-        <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity> <!-- VRとARで異なる -->
+        <a-entity id="head" position="0 1.52 0" camera wasd-controls look-controls="reverseMouseDrag: true"></a-entity> <!-- VRとARで異なる -->
         <a-entity
           id="ctlL"
           laser-controls="hand: left"
@@ -448,6 +448,7 @@
       let xButtonPressedL = false;
       let yButtonPressedL = false;
       var initialPosition = {x: 0, y: 0, z: -7.3};
+      var initialRotation = {x: 0, y: -90, z: 0};
       var currentRotation = {x: 0, y: 0, z: 0};
       var restartRotation = {x: 0, y: 0, z: 0};
       var deltaRotation = {x: 0, y: 0, z: 0};
@@ -485,9 +486,13 @@
       });
 
       document.getElementById("Move0").addEventListener("click", function() {
+        document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
+        document.querySelector('#cameraRig').setAttribute('rotation', {x: 0, y: 0, z: 0});
+        document.querySelector('#head').setAttribute('position', {x: 0, y: 1.52, z: 0});
+        document.querySelector('#head').setAttribute('rotation', {x: 0, y: 0, z: 0});
         moveLocation(destination2);
         document.getElementById('container').setAttribute('position', initialPosition);
-        document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
+        document.getElementById('container').setAttribute('rotation', initialRotation);
       });
 
       const ctlR = document.getElementById("ctlR");
@@ -523,6 +528,7 @@
           moveLocation(destination2);
           document.getElementById('container').setAttribute('position', initialPosition);
           document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
+          document.querySelector('#head').setAttribute('position', {x: 0, y: 1.52, z: 0});
         }
       });
       
@@ -560,6 +566,7 @@
           moveLocation(destination2);
           document.getElementById('container').setAttribute('position', initialPosition);
           document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
+          document.querySelector('#head').setAttribute('position', {x: 0, y: 1.52, z: 0});
         }
       });
       
@@ -724,7 +731,7 @@
           const textEl = this.el;
           const headPosition = headEl.object3D.position;
           const cameraRigPosition = cameraRigEl.object3D.position;
-          const targetPosition = new THREE.Vector3().addVectors(headPosition, cameraRigPosition);
+          var targetPosition = new THREE.Vector3().addVectors(headPosition, cameraRigPosition);
           textEl.object3D.lookAt(targetPosition);
         }
       });
