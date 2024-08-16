@@ -485,8 +485,9 @@
       });
 
       document.getElementById("Move0").addEventListener("click", function() {
-          moveLocation(destination2);
-          document.getElementById('container').setAttribute('position', initialPosition);
+        moveLocation(destination2);
+        document.getElementById('container').setAttribute('position', initialPosition);
+        document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
       });
 
       const ctlR = document.getElementById("ctlR");
@@ -521,6 +522,7 @@
         } else {
           moveLocation(destination2);
           document.getElementById('container').setAttribute('position', initialPosition);
+          document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
         }
       });
       
@@ -557,7 +559,7 @@
         } else {
           moveLocation(destination2);
           document.getElementById('container').setAttribute('position', initialPosition);
-          updateDisplay();
+          document.querySelector('#cameraRig').setAttribute('position', {x: 0, y: 0, z: 0});
         }
       });
       
