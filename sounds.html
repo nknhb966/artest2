@@ -1,29 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リアルタイム周波数スペクトル</title>
+  <title>カスタム周波数スペクトル</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
       background-color: #f4f4f4;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input {
+      width: 60px;
+      padding: 5px;
+      font-size: 16px;
+      text-align: center;
     }
 
     button {
       padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
+      background-color: #eae;
       border: none;
       border-radius: 5px;
       font-size: 16px;
       margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    #volume-container {
+      align-items: center;
+      width: 90%;
+      max-width: 400px;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    #volume-bar {
+      height: 20px;
+      background-color: #aae;
+      width: 0%;
+      transition: width 0.1s ease-out;
     }
 
     canvas {
@@ -34,7 +62,18 @@
   </style>
 </head>
 <body>
-  <button onclick="beginDetect()">スペクトル表示開始</button>
+  <button id="recordButton">録音開始</button>
+  <div class="controls">
+    <label>最小周波数: <input type="number" id="minFreq" value="100"></label>
+    <label>最大周波数: <input type="number" id="maxFreq" value="5000"></label>
+    <label>滑らかさ: <input type="number" id="smoothing" value="0.8" step="0.05" min="0" max="1"></label>
+  </div>
+
+  <div id="volume-container">
+    <span id="volume-text">ボリューム: 0</span>
+    <div id="volume-bar"></div>
+  </div>
+
   <canvas id="spectrum"></canvas>
 
 <script>
@@ -42,20 +81,38 @@ var audioContext;
 var analyser;
 var dataArray;
 var canvas, canvasCtx;
+var mediaRecorder;
+var recordedChunks = [];
+const NUM_BANDS = 30;
+var smoothedData = new Array(NUM_BANDS).fill(0);
 
-function beginDetect() {
+window.onload = function() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then((stream) => {
+      startAudioProcessing(stream);
+    })
+    .catch((error) => {
+      console.error("マイクのアクセスが拒否されました:", error);
+      alert("マイクのアクセスが必要です。ブラウザの設定を確認してください。");
+    });
+};
+
+function startAudioProcessing(stream) {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
   }
 
-  navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+  audioContext.resume().then(() => {  
     const mediaStreamSource = audioContext.createMediaStreamSource(stream);
-    
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 1024; // FFTサイズ（大きいほど高解像度）
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
     mediaStreamSource.connect(analyser);
+
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (event) => recordedChunks.push(event.data);
+    mediaRecorder.onstop = saveRecording;
 
     canvas = document.getElementById("spectrum");
     canvasCtx = canvas.getContext("2d");
@@ -63,33 +120,68 @@ function beginDetect() {
     window.addEventListener('resize', resizeCanvas, false);
     resizeCanvas();
 
-    drawSpectrum();
-  });
+    drawSpectrum();  
+  }).catch(error => console.error("AudioContext resume failed:", error));
 }
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight * 0.5; // 画面の50%の高さ
+  canvas.height = window.innerHeight * 0.5;
 }
 
 function drawSpectrum() {
   requestAnimationFrame(drawSpectrum);
-
   analyser.getByteFrequencyData(dataArray);
-
+  const minFreq = parseFloat(document.getElementById("minFreq").value);
+  const maxFreq = parseFloat(document.getElementById("maxFreq").value);
+  const smoothingFactor = parseFloat(document.getElementById("smoothing").value);
+  const nyquist = audioContext.sampleRate / 2;
+  const minIndex = Math.floor((minFreq / nyquist) * dataArray.length);
+  const maxIndex = Math.floor((maxFreq / nyquist) * dataArray.length);
+  const freqRange = maxIndex - minIndex;
+  const bandSize = Math.floor(freqRange / NUM_BANDS);
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-  let barWidth = canvas.width / dataArray.length * 2;
+  let barWidth = canvas.width / NUM_BANDS;
   let x = 0;
-
-  for (let i = 0; i < dataArray.length; i++) {
-    let barHeight = dataArray[i] * (canvas.height / 255);
-
-    canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 200)`;
+  let totalVolume = 0;
+  for (let i = 0; i < NUM_BANDS; i++) {
+    let sum = 0;
+    for (let j = 0; j < bandSize; j++) {
+      sum += dataArray[minIndex + i * bandSize + j] || 0;
+    }
+    let avg = sum / bandSize;
+    smoothedData[i] = smoothingFactor * smoothedData[i] + (1 - smoothingFactor) * avg;
+    let barHeight = smoothedData[i] * (canvas.height / 255);
+    canvasCtx.fillStyle = `rgb(${barHeight + 0}, 0, 255)`;
     canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
-    x += barWidth + 1;
+    x += barWidth;
+    totalVolume += avg;
   }
+  let averageVolume = totalVolume / NUM_BANDS;
+  document.getElementById("volume-text").innerText = `ボリューム: ${averageVolume.toFixed(0)}`;
+  document.getElementById("volume-bar").style.width = `${Math.min(averageVolume, 100)}%`;
+}
+
+document.getElementById("recordButton").addEventListener("click", function() {
+  if (mediaRecorder.state === "inactive") {
+    recordedChunks = [];
+    mediaRecorder.start();
+    this.textContent = "録音停止";
+  } else {
+    mediaRecorder.stop();
+    this.textContent = "録音開始";
+  }
+});
+
+function saveRecording() {
+  let blob = new Blob(recordedChunks, { type: "audio/wav" });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "recording.wav";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 </script>
 </body>
