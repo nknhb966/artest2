@@ -8,8 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-sound/1.0.1/p5.sound.min.js"></script>
 </head>
 <body>
-    <h1>リアルタイム音声波形</h1>
-    <button onclick="startMic()">マイクを開始</button>
+    <h1>リアルタイム音声波形2</h1>
+    <button id="startButton">マイクを開始</button>
     <p>※ボタンを押すとマイクが有効になります</p>
 
     <script>
@@ -18,39 +18,45 @@
         function setup() {
             createCanvas(600, 300);
             background(0);
-            
-            // FFT（周波数解析オブジェクト）を作成
             fft = new p5.FFT();
         }
 
         function draw() {
             background(0);
-            
-            if (mic) {
+
+            if (mic && mic.enabled) {
                 let waveform = fft.waveform(); // 音声波形データを取得
 
                 stroke(255);
                 noFill();
                 beginShape();
-                
+
                 for (let i = 0; i < waveform.length; i++) {
                     let x = map(i, 0, waveform.length, 0, width);
                     let y = map(waveform[i], -1, 1, 0, height);
                     vertex(x, y);
                 }
-                
+
                 endShape();
             }
         }
 
         // マイクを有効化する関数
         function startMic() {
-            if (!mic) {
-                mic = new p5.AudioIn();
-                mic.start();
-                fft.setInput(mic);
-            }
+            userStartAudio().then(() => {
+                if (!mic) {
+                    mic = new p5.AudioIn();
+                    mic.start(() => {
+                        fft.setInput(mic);
+                        console.log("マイクが有効になりました");
+                    });
+                }
+            }).catch(err => {
+                console.error("オーディオの初期化に失敗:", err);
+            });
         }
+
+        document.getElementById("startButton").addEventListener("click", startMic);
     </script>
 </body>
 </html>
