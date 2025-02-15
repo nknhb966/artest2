@@ -1,74 +1,89 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>リアルタイム音声波形</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-sound/1.0.1/p5.sound.min.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="./main.js"></script>  
 </head>
 <body>
-    <h1>リアルタイム音声波形</h1>
-    <button id="startButton">マイクを開始</button>
-    <p id="statusMessage">※ボタンを押すとマイクが有効になります</p>
+  <button onclick="beginDetect()">ボリューム検出の開始</button>
+  <p id="output"></p>
+<script>
+// 変数
+var audioContext
+var mediaStreamSource
+var meter
 
-    <script>
-        let mic, fft;
-        let micStarted = false; // マイクが開始されたかどうかのフラグ
+// ボリューム検出の開始
+function beginDetect() {
+  // オーディオストリームの生成
+  audioContext = new (window.AudioContext || window.webkitAudioContext)()
+ 
+  // 音声入力の開始
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
+      // メディアストリームソースとメーターの生成
+      mediaStreamSource = audioContext.createMediaStreamSource(stream)
+      meter = createAudioMeter(audioContext)
+      mediaStreamSource.connect(meter)
+    })
+  }
+}
 
-        function setup() {
-            createCanvas(600, 300);
-            background(0);
-            fft = new p5.FFT();
-        }
+// メーターの生成
+function createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
+  // メーターの生成
+  const processor = audioContext.createScriptProcessor(512)
+  processor.onaudioprocess = volumeAudioProcess
+  processor.clipping = false
+  processor.lastClip = 0
+  processor.volume = 0
+  processor.clipLevel = clipLevel || 0.98
+  processor.averaging = averaging || 0.95
+  processor.clipLag = clipLag || 750
+  processor.connect(audioContext.destination)
 
-        function draw() {
-            background(0);
+  // クリップチェック時に呼ばれる
+  processor.checkClipping = function() {
+    if (!this.clipping) {
+      return false
+    }
+    if ((this.lastClip + this.clipLag) < window.performance.now()) {
+      this.clipping = false
+    }
+    return this.clipping
+  }
 
-            if (micStarted && mic && mic.enabled) {
-                let waveform = fft.waveform(); // 音声波形データを取得
+  // シャットダウン時に呼ばれる
+  processor.shutdown = function() {
+    this.disconnect()
+    this.onaudioprocess = null
+  }
 
-                stroke(255);
-                noFill();
-                beginShape();
+  return processor
+}
 
-                for (let i = 0; i < waveform.length; i++) {
-                    let x = map(i, 0, waveform.length, 0, width);
-                    let y = map(waveform[i], -1, 1, 0, height);
-                    vertex(x, y);
-                }
+// オーディオ処理時に呼ばれる
+function volumeAudioProcess(event) {
+  const buf = event.inputBuffer.getChannelData(0)
+  const bufLength = buf.length
+  let sum = 0
+  let x
 
-                endShape();
-            }
-        }
-
-        // マイクを有効化する関数
-        function startMic() {
-            if (micStarted) return; // すでに開始している場合は何もしない
-
-            userStartAudio().then(() => {
-                mic = new p5.AudioIn();
-                mic.start().then(() => {
-                    if (mic.enabled) {
-                        fft.setInput(mic);
-                        micStarted = true;
-                        document.getElementById("statusMessage").innerText = "✅ マイクが有効になりました！";
-                        console.log("✅ マイクが有効になりました");
-                    } else {
-                        document.getElementById("statusMessage").innerText = "❌ マイクが有効になりませんでした";
-                        console.warn("mic.enabled が false のまま");
-                    }
-                }).catch(err => {
-                    console.error("❌ マイクの起動に失敗:", err);
-                    document.getElementById("statusMessage").innerText = "❌ マイクの許可が必要です";
-                });
-            }).catch(err => {
-                console.error("❌ オーディオの初期化に失敗:", err);
-                document.getElementById("statusMessage").innerText = "❌ オーディオの初期化に失敗しました";
-            });
-        }
-
-        document.getElementById("startButton").addEventListener("click", startMic);
-    </script>
+  // 平均ボリュームの計算
+  for (var i = 0; i < bufLength; i++) {
+    x = buf[i]
+    if (Math.abs(x) >= this.clipLevel) {
+        this.clipping = true
+        this.lastClip = window.performance.now()
+    }
+    sum += x * x
+  }
+  const rms = Math.sqrt(sum / bufLength)
+  this.volume = Math.max(rms, this.volume * this.averaging)
+ 
+  // ボリュームの表示
+  output.innerHTML = 'ボリューム: '+this.volume.toFixed(4)
+}
+</script>
 </body>
 </html>
