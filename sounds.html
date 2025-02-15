@@ -174,11 +174,11 @@ document.getElementById("recordButton").addEventListener("click", function() {
 });
 
 function saveRecording() {
-  let blob = new Blob(recordedChunks, { type: "audio/wav" });
+  let blob = new Blob(recordedChunks, { type: "audio/mp3" });
   let url = URL.createObjectURL(blob);
   let a = document.createElement("a");
   a.href = url;
-  a.download = "recording.wav";
+  a.download = "recording.mp3";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
