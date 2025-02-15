@@ -8,9 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-sound/1.0.1/p5.sound.min.js"></script>
 </head>
 <body>
-    <h1>リアルタイム音声波形2</h1>
+    <h1>リアルタイム音声波形</h1>
     <button id="startButton">マイクを開始</button>
-    <p>※ボタンを押すとマイクが有効になります</p>
+    <p id="statusMessage">※ボタンを押すとマイクが有効になります</p>
 
     <script>
         let mic, fft;
@@ -48,11 +48,13 @@
                     mic = new p5.AudioIn();
                     mic.start(() => {
                         fft.setInput(mic);
+                        document.getElementById("statusMessage").innerText = "✅ マイクが有効になりました！";
                         console.log("マイクが有効になりました");
                     });
                 }
             }).catch(err => {
                 console.error("オーディオの初期化に失敗:", err);
+                document.getElementById("statusMessage").innerText = "❌ マイクの許可が必要です";
             });
         }
 
