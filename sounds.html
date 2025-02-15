@@ -8,12 +8,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-sound/1.0.1/p5.sound.min.js"></script>
 </head>
 <body>
-    <h1>リアルタイム音声波形2</h1>
+    <h1>リアルタイム音声波形</h1>
     <button id="startButton">マイクを開始</button>
     <p id="statusMessage">※ボタンを押すとマイクが有効になります</p>
 
     <script>
         let mic, fft;
+        let micStarted = false; // マイクが開始されたかどうかのフラグ
 
         function setup() {
             createCanvas(600, 300);
@@ -24,7 +25,7 @@
         function draw() {
             background(0);
 
-            if (mic && mic.enabled) {
+            if (micStarted && mic && mic.enabled) {
                 let waveform = fft.waveform(); // 音声波形データを取得
 
                 stroke(255);
@@ -43,25 +44,26 @@
 
         // マイクを有効化する関数
         function startMic() {
+            if (micStarted) return; // すでに開始している場合は何もしない
+
             userStartAudio().then(() => {
-                if (!mic) {
-                    mic = new p5.AudioIn();
-                    mic.start().then(() => {
-                        if (mic.enabled) {
-                            fft.setInput(mic);
-                            document.getElementById("statusMessage").innerText = "✅ マイクが有効になりました！";
-                            console.log("マイクが有効になりました");
-                        } else {
-                            document.getElementById("statusMessage").innerText = "❌ マイクが有効になりませんでした";
-                            console.warn("mic.enabled が false のまま");
-                        }
-                    }).catch(err => {
-                        console.error("マイクの起動に失敗:", err);
-                        document.getElementById("statusMessage").innerText = "❌ マイクの許可が必要です";
-                    });
-                }
+                mic = new p5.AudioIn();
+                mic.start().then(() => {
+                    if (mic.enabled) {
+                        fft.setInput(mic);
+                        micStarted = true;
+                        document.getElementById("statusMessage").innerText = "✅ マイクが有効になりました！";
+                        console.log("✅ マイクが有効になりました");
+                    } else {
+                        document.getElementById("statusMessage").innerText = "❌ マイクが有効になりませんでした";
+                        console.warn("mic.enabled が false のまま");
+                    }
+                }).catch(err => {
+                    console.error("❌ マイクの起動に失敗:", err);
+                    document.getElementById("statusMessage").innerText = "❌ マイクの許可が必要です";
+                });
             }).catch(err => {
-                console.error("オーディオの初期化に失敗:", err);
+                console.error("❌ オーディオの初期化に失敗:", err);
                 document.getElementById("statusMessage").innerText = "❌ オーディオの初期化に失敗しました";
             });
         }
