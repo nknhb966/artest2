@@ -2,12 +2,34 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>リアルタイム波形表示</title>
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    button {
+      position: absolute;
+      top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
     canvas {
-      border: 1px solid black;
       width: 100%;
-      height: 200px;
+      height: 50%; /* 高さを画面の50%に */
+      background-color: #000;
     }
   </style>
 </head>
@@ -38,8 +60,17 @@ function beginDetect() {
     canvas = document.getElementById("waveform");
     canvasCtx = canvas.getContext("2d");
 
+    // Canvasサイズを動的に変更
+    window.addEventListener('resize', resizeCanvas, false);
+    resizeCanvas();
+
     drawWaveform();
   });
+}
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;  // 画面の幅に合わせる
+  canvas.height = window.innerHeight * 0.5; // 高さを画面の50%に
 }
 
 function drawWaveform() {
