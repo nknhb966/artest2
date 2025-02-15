@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リアルタイム音声波形</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-sound/1.0.1/p5.sound.min.js"></script>
+</head>
+<body>
+    <h1>リアルタイム音声波形</h1>
+    <button onclick="startMic()">マイクを開始</button>
+    <p>※ボタンを押すとマイクが有効になります</p>
+
+    <script>
+        let mic, fft;
+
+        function setup() {
+            createCanvas(600, 300);
+            background(0);
+            
+            // FFT（周波数解析オブジェクト）を作成
+            fft = new p5.FFT();
+        }
+
+        function draw() {
+            background(0);
+            
+            if (mic) {
+                let waveform = fft.waveform(); // 音声波形データを取得
+
+                stroke(255);
+                noFill();
+                beginShape();
+                
+                for (let i = 0; i < waveform.length; i++) {
+                    let x = map(i, 0, waveform.length, 0, width);
+                    let y = map(waveform[i], -1, 1, 0, height);
+                    vertex(x, y);
+                }
+                
+                endShape();
+            }
+        }
+
+        // マイクを有効化する関数
+        function startMic() {
+            if (!mic) {
+                mic = new p5.AudioIn();
+                mic.start();
+                fft.setInput(mic);
+            }
+        }
+    </script>
+</body>
+</html>
