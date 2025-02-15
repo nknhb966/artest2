@@ -3,39 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リアルタイム波形表示</title>
+  <title>リアルタイム周波数スペクトル</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       background-color: #f4f4f4;
     }
 
     button {
-      position: absolute;
-      top: 20px;
       padding: 10px 20px;
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 5px;
       font-size: 16px;
+      margin-bottom: 10px;
     }
 
     canvas {
       width: 100%;
-      height: 50%; /* 高さを画面の50%に */
-      background-color: #000;
+      height: 50%;
+      background-color: black;
     }
   </style>
 </head>
 <body>
-  <button onclick="beginDetect()">波形表示開始</button>
-  <canvas id="waveform"></canvas>
+  <button onclick="beginDetect()">スペクトル表示開始</button>
+  <canvas id="spectrum"></canvas>
 
 <script>
 var audioContext;
@@ -52,55 +52,44 @@ function beginDetect() {
     const mediaStreamSource = audioContext.createMediaStreamSource(stream);
     
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 2048; // 高解像度の波形を得る
+    analyser.fftSize = 1024; // FFTサイズ（大きいほど高解像度）
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 
     mediaStreamSource.connect(analyser);
 
-    canvas = document.getElementById("waveform");
+    canvas = document.getElementById("spectrum");
     canvasCtx = canvas.getContext("2d");
 
-    // Canvasサイズを動的に変更
     window.addEventListener('resize', resizeCanvas, false);
     resizeCanvas();
 
-    drawWaveform();
+    drawSpectrum();
   });
 }
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;  // 画面の幅に合わせる
-  canvas.height = window.innerHeight * 0.5; // 高さを画面の50%に
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight * 0.5; // 画面の50%の高さ
 }
 
-function drawWaveform() {
-  requestAnimationFrame(drawWaveform);
+function drawSpectrum() {
+  requestAnimationFrame(drawSpectrum);
 
-  analyser.getByteTimeDomainData(dataArray);
+  analyser.getByteFrequencyData(dataArray);
 
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  canvasCtx.lineWidth = 2;
-  canvasCtx.strokeStyle = "blue";
-  canvasCtx.beginPath();
 
-  let sliceWidth = canvas.width / dataArray.length;
+  let barWidth = canvas.width / dataArray.length * 2;
   let x = 0;
 
   for (let i = 0; i < dataArray.length; i++) {
-    let v = dataArray[i] / 128.0; // 値を [0, 1] の範囲に正規化
-    let y = v * canvas.height / 2; // 中央線を基準に描画
+    let barHeight = dataArray[i] * (canvas.height / 255);
 
-    if (i === 0) {
-      canvasCtx.moveTo(x, y);
-    } else {
-      canvasCtx.lineTo(x, y);
-    }
+    canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 200)`;
+    canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
 
-    x += sliceWidth;
+    x += barWidth + 1;
   }
-
-  canvasCtx.stroke();
 }
 </script>
 </body>
