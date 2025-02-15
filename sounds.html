@@ -2,15 +2,24 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <title>リアルタイム波形表示</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      width: 100%;
+      height: 200px;
+    }
+  </style>
 </head>
 <body>
-  <button onclick="beginDetect()">aボリューム検出の開始</button>
-  <p id="output"></p>
+  <button onclick="beginDetect()">波形表示開始</button>
+  <canvas id="waveform"></canvas>
 
 <script>
 var audioContext;
 var analyser;
 var dataArray;
+var canvas, canvasCtx;
 
 function beginDetect() {
   if (!audioContext) {
@@ -19,21 +28,48 @@ function beginDetect() {
 
   navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
     const mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 512;
+    analyser.fftSize = 2048; // 高解像度の波形を得る
     dataArray = new Uint8Array(analyser.frequencyBinCount);
+
     mediaStreamSource.connect(analyser);
-    updateVolume();
+
+    canvas = document.getElementById("waveform");
+    canvasCtx = canvas.getContext("2d");
+
+    drawWaveform();
   });
 }
 
-function updateVolume() {
-  analyser.getByteFrequencyData(dataArray);
-  let sum = dataArray.reduce((acc, val) => acc + val, 0);
-  let volume = sum / dataArray.length; // 平均値を計算
+function drawWaveform() {
+  requestAnimationFrame(drawWaveform);
 
-  document.getElementById("output").innerHTML = "ボリューム: " + volume.toFixed(2);
-  requestAnimationFrame(updateVolume);
+  analyser.getByteTimeDomainData(dataArray);
+
+  canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  canvasCtx.lineWidth = 2;
+  canvasCtx.strokeStyle = "blue";
+  canvasCtx.beginPath();
+
+  let sliceWidth = canvas.width / dataArray.length;
+  let x = 0;
+
+  for (let i = 0; i < dataArray.length; i++) {
+    let v = dataArray[i] / 128.0; // 値を [0, 1] の範囲に正規化
+    let y = v * canvas.height / 2; // 中央線を基準に描画
+
+    if (i === 0) {
+      canvasCtx.moveTo(x, y);
+    } else {
+      canvasCtx.lineTo(x, y);
+    }
+
+    x += sliceWidth;
+  }
+
+  canvasCtx.stroke();
 }
 </script>
 </body>
